@@ -34,7 +34,7 @@
 % PROPRIETARY INFORMATION
 
 
-function [cPatches bandschosen imgChosen patchsizeschosen] = randC1Patches(cItrainingOnly, numPatchesPerSize, patchSizes);
+function [cPatches bandschosen imgChosen patchsizeschosen] = randC1Patches(cItrainingOnly, numPatchesPerSize, patchSizes, USECROPS);
 % extracts random prototypes for the training of the C2 classification system.
 % cPatches the returned prototypes
 % imgChosen, the image the patch came from
@@ -44,15 +44,10 @@ function [cPatches bandschosen imgChosen patchsizeschosen] = randC1Patches(cItra
 
 if nargin<2
   numPatchesPerSize = 250;
-  patchSizes = [4:4:16;4:4:16];
+  patchSizes = [4 8 12;4 8 12;4 4 4];
 end
 
 %----Settings for Training the random patches--------%
-%c1ScaleSS = [1 3];
-%RF_siz    = [11 13];
-%c1SpaceSS = [10];
-%minFS     = 11;
-%maxFS     = 13;
 nImages = length(cItrainingOnly);
 nPatchSizes = size(patchSizes,2);
 nPatchesTotal = nPatchSizes*numPatchesPerSize;
@@ -70,9 +65,9 @@ maxFS     = 39;
 
 % select patch source images and get their S1/C1 activations
 sourceImgs = cItrainingOnly(floor(rand(1,nPatchesTotal)*nImages)+1);
-parfor i = 1:numPatchesPerSize % we reuse images for multiple patches
-    stim = double(rgb2gray(imread(sourceImgs{i}))); % WARNING: side-effects.
-    [c1source(i,:,:,:),~] = C1(stim,filters,fSiz,c1SpaceSS,c1ScaleSS,c1OL);
+for i = 1:numPatchesPerSize % we reuse images for multiple patches
+    stim = readImages(sourceImgs(i),USECROPS);
+    [c1source(i,:,:,:),~] = C1(stim{1},filters,fSiz,c1SpaceSS,c1ScaleSS,c1OL,0); % remove borders!
 end
 
 % initialize neccesary arrays/cells
