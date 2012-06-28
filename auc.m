@@ -11,7 +11,7 @@ function auc = auc(predicted,actual,targLabel,dtorLabel)
 %
 %     targLabel, dtorLabel: the actual tokens used as labels
 %
-% returns: area, a scalar, the area under the ROC curve (AUC) 
+% returns: auc, a scalar, the area under the ROC curve (AUC) 
 
     if (nargin < 3) targLabel = 1; dtorLabel = 0; end;
 
@@ -23,6 +23,6 @@ function auc = auc(predicted,actual,targLabel,dtorLabel)
     R = tiedrank(predicted);
 
     % Calculate AUC
-    area = (sum(R(actual == targLabel)) - (nTargets^2 + nTargets)/2) /...
-           (nTargets * nDistractors);
+    auc = (sum(R(actual == targLabel)) - (nTargets^2 + nTargets)/2) /...
+          (nTargets * nDistractors);
 end
