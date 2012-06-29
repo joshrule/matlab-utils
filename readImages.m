@@ -1,10 +1,14 @@
 function imgs = readImages(imgList,USECROPS)
-% imgs = readImages(imgList)
+% imgs = readImages(imgList, USECROPS)
 %
 % given a cell aray of image filenames, return a cell array of image matrices
 % prepared for processing by HMAX (grayscale doubles).
 %
-% args: imgList, a cell array of image filenames
+% args: 
+%
+%     imgList: a cell array of image filenames
+%
+%     USECROPS: a logical, if true, use cropped images if available
 %
 % returns: imgs, a cell array of matrices representing images
 
