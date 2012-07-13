@@ -47,7 +47,7 @@ INCLUDEBORDERS = 0;
 
 % select patch source images and get their S1/C1 activations
 sourceImgs = imgs(ceil(rand(1,nPatchesTotal)*nImgs));
-for iImg = 1:nPatchesPerSize % reuse images for multiple patches
+parfor iImg = 1:nPatchesPerSize % reuse images for multiple patches
     img = readImages(sourceImgs(iImg),USECROPS);
     c1r{iImg} = C1(img{1},filters,filterSizes,c1Space,c1Scale,c1OL,...
                    INCLUDEBORDERS);
@@ -56,6 +56,7 @@ end
 % select patches from random C1 bands
 count = 1;
 for iPatch = 1:nPatchesPerSize
+    if (mod(iPatch,100) == 0) fprintf('%d\n',iPatch); end;
     b = c1r{iPatch};
     for iSize = 1:nPatchSizes
         foundBand = 0;
