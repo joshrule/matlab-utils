@@ -21,8 +21,8 @@ function features = chooseFeatures(x,y,featureClasses,k)
         indices = randperm(size(x,1));
     else % FI
         for iClass = 1:nFeatureClasses
-            targs =  y(iClass,:);
-            dtors = ~y(iClass,:);
+            targs =  find(y(iClass,:));
+            dtors = find(~y(iClass,:));
             classFeatures = find(featureClasses == iClass);
             fi(classFeatures) = fisher(x(classFeatures,targs)',...
                                        x(classFeatures,dtors)');
