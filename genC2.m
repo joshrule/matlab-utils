@@ -44,34 +44,45 @@ function c2 = genC2(gaborSpecs,imgNames,c1bands,linPatches,patchSpecs,USEMATLAB)
         end
     end
 
-    c2 = zeros(sum(patchSpecs(4,:)),length(imgNames),'double');
-    for iImg = 1:ceil(length(imgNames)/10)
-        iStart = 1+(iImg-1)*10;
-        iStop = min(iImg*10,length(imgNames));
-        fprintf('start: %d stop: %d\n',iStart, iStop);
+    parc2 = zeros(20*length(patches)/4,ceil(length(imgNames)/20),'double');
+    parfor iImg = 1:ceil(length(imgNames)/20)
+        iStart = 1+(iImg-1)*20;
+        iStop = min(iStart+20-1,length(imgNames));
+        fprintf('%d: start: %d stop: %d\n',iImg,iStart, iStop);
         imgs = readImages(imgNames(iStart:iStop));
         tooBig = false;
         for i = 1:length(imgs)
             tooBig = tooBig || max(size(imgs{i})) > 1024;
         end
+        fprintf('too big? %d\n',tooBig);
         if USEMATLAB || tooBig
-            c2(:,iStart:iStop) = extractC2FromCell(linFilters,filterSizes,...
-                                           c1bands.c1Space,c1bands.c1Scale,...
-                                           c1OL,linPatches,imgs,...
-                                           size(patchSpecs,2),...
-                                           patchSpecs(1:3,:),0,[],0,0);
+            c = extractC2FromCell(linFilters,filterSizes,...
+                                   c1bands.c1Space,c1bands.c1Scale,...
+                                   c1OL,linPatches,imgs,...
+                                   size(patchSpecs,2),...
+                                   patchSpecs(1:3,:),0,[],0,0);
+            d = [reshape(c,[],1); zeros((20-size(c,2))*length(patches)/4,1)];
+            parc2(:,iImg) = d;
         else
-            c2(:,iStart:iStop) = hmaxCudaFun(filters,patches,imgs)';
+            parc2(:,iImg) = hmaxCudaFun(filters,patches,imgs,20)';
         end
     end
+    c2 = [];
+    for i = 1:size(parc2,2)
+        c2 = [c2 reshape(parc2(:,i),[],20)];
+    end
+    c2 = c2(:,1:length(imgNames));
 end
 
-function c2 = hmaxCudaFun(filters,patches,imgs)
+function c2 = hmaxCudaFun(filters,patches,imgs,maxImgs)
+    c2 = zeros(length(patches)/4,maxImgs);
     for i = 1:ceil(length(patches)/2048);
         startIn = 1+2048*(i-1);
         stopIn = min(length(patches),2048*i);
         startOut = 1+512*(i-1);
         stopOut = min(length(patches)/4,512*i);
-        c2(:,startOut:stopOut) = hmaxcudanew(imgs,filters,patches(startIn:stopIn),0,1024);
+        c = hmaxcudanew(imgs,filters,patches(startIn:stopIn),0,1024)';
+        c2(startOut:stopOut,1:length(imgs)) = c;
     end
+    c2 = reshape(c2,[],1);
 end

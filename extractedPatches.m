@@ -1,31 +1,20 @@
-function [patches bandsChosen imgChosen sizesChosen] = randPatches(imgs, nPatchesPerSize, patchSizes, USECROPS)
-% [patches bandsChosen imgChosen sizesChosen] = randPatches(imgs, nPatchesPerSize, patchSizes, USECROPS)
+function [patches bandsChosen imgChosen sizesChosen locationsChosen] = extractedPatches(imgs, nPatchesPerSize, patchSizes, USECROPS)
+% [patches bandsChosen imgChosen sizesChosen locationsChosen] = extractedPatches(imgs, nPatchesPerSize, patchSizes, USECROPS)
 %
-% extracts random patches for use as S2 features.
+% extracts patches of C1 activations at random locations for use as S2 features.
 %
-% args:
+% - imgs: a cell array of image filenames, the images to be mined for patches
+% - nPatchesPerSize: a scalar, the number of patches to create per size
+% - patchSizes: a 3 x nPatchSizes array of patch sizes. Each column should hold
+%     [nRows; nCols; nOrientations]
+% - USECROPS: a logical, if true, use extract from cropped images, if available
 %
-%     imgs: a cell array of image filenames, the images to be mined for patches
-%
-%     nPatchesPerSize: a scalar, the number of patches to create per size
-%
-%     patchSizes: a 3 x nPatchSizes array of patch sizes 
-%     Each column should hold [nRows; nCols; nOrientations]
-%
-%     USECROPS: a logical, if true, cropped images will be used for patch
-%     extraction if available
-%
-% returns:
-%
-%     patches: a cell array of length nPatchSizes, with the cell at index i
+% - patches: a cell array of length nPatchSizes, with the cell at index i
 %     containing an [prod(patchSizes(:,i)) nPatchesPerSize] array representing
 %     the extracted patches
-%
-%     bandsChosen: an [1 nPatchesTotal] array, the band selected for each patch
-%
-%     imgChosen: an [1 nPatchesTotal] array, the image selected for each patch
-%
-%     sizesChosen: an [1 nPatchesTotal] array, the size selected for each patch
+% - bandsChosen: an [1 nPatchesTotal] array, the band selected for each patch
+% - imgChosen: an [1 nPatchesTotal] array, the image selected for each patch
+% - sizesChosen: an [1 nPatchesTotal] array, the size selected for each patch
 
 if (nargin < 4) USECROPS = 0; end;
 if (nargin < 3) patchSizes = [4 8 12; 4 8 12; 4 4 4]; end;
@@ -48,7 +37,7 @@ INCLUDEBORDERS = 0;
 % select patch source images and get their S1/C1 activations
 sourceImgs = imgs(ceil(rand(1,nPatchesTotal)*nImgs));
 parfor iImg = 1:nPatchesPerSize % reuse images for multiple patches
-    img = readImages(sourceImgs(iImg),USECROPS);
+    img = readImages(sourceImgs(iImg));
     c1r{iImg} = C1(img{1},filters,filterSizes,c1Space,c1Scale,c1OL,...
                    INCLUDEBORDERS);
 end
@@ -71,6 +60,7 @@ for iPatch = 1:nPatchesPerSize
                 bandsChosen(1,count) = randBand;
                 sizesChosen(1,count) = iSize;
                 imgChosen{1,count} = sourceImgs{iPatch};
+                locationsChosen(:,count) = [x; y];
                 count = count + 1;
             end
         end
