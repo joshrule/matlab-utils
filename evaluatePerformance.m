@@ -12,7 +12,7 @@ function [aucs,dprimes] = evaluatePerformance(x,y,cv,method,nFeatures)
                 else
                     X = x;
                 end
-                classificationValues = classifyResponses(X(chooseFeatures(X(:,cv{iClass,iTrain,iRun}),y(iClass,cv{iClass,iTrain,iRun}),ones(1,20000),nFeatures),:),y(iClass,:),cv{iClass,iTrain,iRun},method);
+                classificationValues = classifyResponses(X(chooseFeatures(X(:,cv{iClass,iTrain,iRun}),y(iClass,cv{iClass,iTrain,iRun}),[],nFeatures),:),y(iClass,:),cv{iClass,iTrain,iRun},method);
                 classPredictions = (sign(classificationValues)+1)./2;
                 aucs(iClass,iTrain,iRun) = auc(classificationValues,y(iClass,~cv{iClass,iTrain,iRun}));
                 dprimes(iClass,iTrain,iRun) = dprime(sign(classPredictions),y(iClass,~cv{iClass,iTrain,iRun}),1,0);
