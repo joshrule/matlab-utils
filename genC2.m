@@ -54,7 +54,6 @@ function c2 = genC2(gaborSpecs,imgNames,c1bands,linPatches,patchSpecs,USEMATLAB)
         for i = 1:length(imgs)
             tooBig = tooBig || max(size(imgs{i})) > 1024;
         end
-        fprintf('too big? %d\n',tooBig);
         if USEMATLAB || tooBig
             c = extractC2FromCell(linFilters,filterSizes,...
                                    c1bands.c1Space,c1bands.c1Scale,...
