@@ -1,4 +1,4 @@
-function imgs = readImages(imgList,GRAY,CROP)
+function imgs = readImages(imgList,GRAY,CROP,maxSize)
 % imgs = readImages(imgList,GRAY,CROP)
 %
 % given a cell aray of image filenames, return a cell array of image matrices.
@@ -6,6 +6,7 @@ function imgs = readImages(imgList,GRAY,CROP)
 % imgList: a cell array of image filenames
 % GRAY: a logical, if true, grayscale the images
 % CROP: an int, if > 0, crop, if 0, do nothing, if < 0, cropped region = 0
+% maxSize: a scalar, max(size(image)) < maxSize
 %
 % imgs, a cell array of matrices representing images
 
@@ -23,34 +24,40 @@ for i = 1:length(imgList)
         img2 = double(img);
     end
 
+    if (nargin == 4) && max(size(img2)) > maxSize
+        img3 = imresize(img2,maxSize/max(size(img2)));
+    else
+        img3 = img2;
+    end
+
     [fa,fb,fc] = fileparts(imgList{i});
 
     if CROP > 0 && exist([imgList{i} '.mat'],'file') % only box
         R = load([imgList{i} '.mat'],'rectangle');
         r = R.rectangle;
-        imgs{i} = squeeze(img2(ceil(r(2)):floor(r(2)+r(4)),...
+        imgs{i} = squeeze(img3(ceil(r(2)):floor(r(2)+r(4)),...
                                ceil(r(1)):floor(r(1)+r(3)),:));
     elseif CROP > 0 && exist(fullfile(fa,[fb '.xml']),'file') % only box
         rec = VOCreadxml(fullfile(fa,[fb,'.xml']));
         b = rec.annotation.object(1).bndbox; % use just the first object
-        resize = size(squeeze(img2),2)/str2num(rec.annotation.size.width);
-        imgs{i} = squeeze(img2(str2num(b.ymin)*resize+1:str2num(b.ymax)*resize+1,str2num(b.xmin)*resize+1:str2num(b.xmax)*resize+1,:));
+        resize = size(squeeze(img3),2)/str2num(rec.annotation.size.width);
+        imgs{i} = squeeze(img3(str2num(b.ymin)*resize+1:str2num(b.ymax)*resize+1,str2num(b.xmin)*resize+1:str2num(b.xmax)*resize+1,:));
     elseif CROP < 0 && exist([imgList{i} '.mat'],'file') % exclude box
         R = load([imgList{i} '.mat'],'rectangle');
         r = R.rectangle;
-        img3 = squeeze(img2);
-        img3(ceil(r(2)):floor(r(2)+r(4)),ceil(r(1)):floor(r(1)+r(3)),:) = 0;
-        imgs{i} = img3;
+        img4 = squeeze(img3);
+        img4(ceil(r(2)):floor(r(2)+r(4)),ceil(r(1)):floor(r(1)+r(3)),:) = 0;
+        imgs{i} = img4;
     elseif CROP < 0 && exist(fullfile(fa,[fb '.xml']),'file') % exclude box
         rec = VOCreadxml(fullfile(fa,[fb,'.xml']));
-        img3 = squeeze(img2);
-        resize = size(img3,2)/str2num(rec.annotation.size.width);
+        img4 = squeeze(img3);
+        resize = size(img4,2)/str2num(rec.annotation.size.width);
         for iObj = 1:length(rec.annotation.object) % exclude all objects!
             b = rec.annotation.object(iObj).bndbox;
-            img3(str2num(b.ymin)*resize+1:str2num(b.ymax)*resize+1,str2num(b.xmin)*resize+1:str2num(b.xmax)*resize+1,:) = 0;
+            img4(str2num(b.ymin)*resize+1:str2num(b.ymax)*resize+1,str2num(b.xmin)*resize+1:str2num(b.xmax)*resize+1,:) = 0;
         end
-        imgs{i} = img3;
+        imgs{i} = img4;
     else
-        imgs{i} = img2;
+        imgs{i} = img3;
     end
 end
