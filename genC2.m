@@ -1,5 +1,5 @@
-function c2 = genC2(gaborSpecs,imgNames,c1bands,linPatches,patchSpecs,USEMATLAB)
-% c2 = genC2(gaborSpecs,imgNames,c1bands,linPatches,patchSpecs,USEMATLAB)
+function c2 = genC2(gaborSpecs,imgNames,c1bands,linPatches,patchSpecs,USEMATLAB,maxSize)
+% c2 = genC2(gaborSpecs,imgNames,c1bands,linPatches,patchSpecs,USEMATLAB,maxSize)
 % 
 % give C2 responses for an image set
 %
@@ -13,6 +13,7 @@ function c2 = genC2(gaborSpecs,imgNames,c1bands,linPatches,patchSpecs,USEMATLAB)
 %
 % c2, an nPatches x nImgs array, C2 responses for an image set
 
+    if (nargin < 7) maxSize = bitmax; end;
     if (nargin < 6) USEMATLAB = 1; end;
 
     [filterSizes,linFilters,c1OL,~] = initGabor(gaborSpecs.orientations,...
@@ -49,7 +50,7 @@ function c2 = genC2(gaborSpecs,imgNames,c1bands,linPatches,patchSpecs,USEMATLAB)
         iStart = 1+(iImg-1)*20;
         iStop = min(iStart+20-1,length(imgNames));
         fprintf('%d: start: %d stop: %d\n',iImg,iStart, iStop);
-        imgs = readImages(imgNames(iStart:iStop));
+        imgs = readImages(imgNames(iStart:iStop),1,0,maxSize);
         tooBig = false;
         for i = 1:length(imgs)
             tooBig = tooBig || max(size(imgs{i})) > 1024;
