@@ -1,7 +1,7 @@
-function [ C2gauss ] = C2gaussian(C2dist, C2sigma)
-%C2gaussian takes the Euclidean distance activation of C2 and makes a
-%gaussian response function.
+function mGaussian = gaussian(mEuclidean,sigma)
+% mGaussian = gaussian(mEuclidean,sigma)
+%
+% make the Euclidean distance activation of a matrix Gaussian
 
-C2gauss = exp(-(C2dist.^2)./(2*C2sigma.^2));
-
+    mGaussian = exp(-(mEuclidean.^2)./(2*sigma.^2));
 end
