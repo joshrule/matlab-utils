@@ -10,7 +10,7 @@ function imgOut = grayImage(imgIn)
     if size(imgIn,3) == 3
         imgOut = double(rgb2gray(imgIn));
     else
-        imgOut = double(imgIn)
+        imgOut = double(imgIn);
     end
 end
 
