@@ -50,7 +50,7 @@ function c2 = genC2(gaborSpecs,imgNames,c1bands,linPatches,patchSpecs,USEMATLAB,
         iStart = 1+(iImg-1)*20;
         iStop = min(iStart+20-1,length(imgNames));
         fprintf('%d: start: %d stop: %d\n',iImg,iStart, iStop);
-        imgs = readImages(imgNames(iStart:iStop),1,0,maxSize);
+        imgs = cellfun(@(x) double(resizeImage(grayImage(imread(x)),maxSize)),imgNames(iStart:iStop),'UniformOutput',0);
         tooBig = false;
         for i = 1:length(imgs)
             tooBig = tooBig || max(size(imgs{i})) > 1024;
