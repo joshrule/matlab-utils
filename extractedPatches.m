@@ -24,8 +24,6 @@ function ps = extractedPatches(c1r,patchSizes,gradThreshold,corrThreshold)
     if (nargin < 2) patchSizes = [2:2:8;2:2:8;4*ones(1,4);100*ones(1,4)]; end;
     nImgs = length(c1r);
     nPatchSizes = size(patchSizes,2);
-%   ps = struct('bands',[],'imgs',[],'sizes',[],...
-%     'locations',[],'patches',cell(1,8));
 
     for iSize = 1:nPatchSizes
         ps.patches{iSize} = [];
