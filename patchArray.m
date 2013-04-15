@@ -17,11 +17,9 @@ function patchArray = patchArray(patchStruct,imgNames)
         patchArray(iPatch).size.ncols = sizes(iPatch,2);
         patchArray(iPatch).size.nOrientations = sizes(iPatch,3);
         patchArray(iPatch).band = bands(iPatch);
-        % TODO: rewrite to use conversions to pixel-space
-        patchArray(iPatch).x1 = locations(iPatch,1);
-        patchArray(iPatch).x2 = locations(iPatch,1)+sizes(iPatch,1)-1;
-        patchArray(iPatch).y1 = locations(iPatch,2);
-        patchArray(iPatch).y2 = locations(iPatch,2)+sizes(iPatch,2)-1;
+        patchArray(iPatch).y1 = locations(iPatch,1);
+        patchArray(iPatch).y2 = locations(iPatch,1)+sizes(iPatch,1)-1;
+        patchArray(iPatch).x1 = locations(iPatch,2);
+        patchArray(iPatch).x2 = locations(iPatch,2)+sizes(iPatch,2)-1;
     end
 end
-
