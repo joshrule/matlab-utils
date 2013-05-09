@@ -2,7 +2,8 @@ function grabBboxers(bboxWnids,start,user,key)
 % grabBboxers(bboxWnids,start,user,key)
     for i = start:length(bboxWnids)
         word = wnidToDefinition('/home/joshrule/maxlab/image-sets/image-net/images/structure_released.xml',bboxWnids{i});
-        if exist(['/home/joshrule/maxlab/image-sets/image-net/images/' bboxWnids{i} '.tar'],'file')
+        if exist(['/home/joshrule/maxlab/image-sets/image-net/images/' bboxWnids{i} '.tar'],'file') || ...
+           exist(['/home/joshrule/maxlab/image-sets/image-net/images/' bboxWnids{i} '/'],'dir')
             fprintf('%d: already downloaded %s\n',i,word.words);
         else
             attempts = 0;
