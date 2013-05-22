@@ -5,11 +5,10 @@ end
 function categories = listImageNetCategories(imgDir)
    files = dir([imgDir 'n*']);
    categories = unique(regexp({files.name}','n\d+','match','once'));
-   length(categories)
 end
 
 function conditionalUnpack(imgDir,categories)
-    for iCategory = 1:length(categories)
+    parfor iCategory = 1:length(categories)
         iterDir = [imgDir categories{iCategory} '/'];
         iterFile1 = [imgDir categories{iCategory} '.tar'];
         iterFile2 = [iterDir categories{iCategory} '.tar'];
@@ -23,11 +22,15 @@ function conditionalUnpack(imgDir,categories)
             system(['mv ' iterFile1 ' ' iterFile2 ';']);
             fprintf('%d: moved %s to %s\n',iCategory,iterFile1,iterFile2);
         end
-        if exist(iterFile2,'file')  
-            system(['cd ' iterDir '; ' ...
-                    'tar xf ' iterFile2 '; ' ...
-                    'cd ' imgDir ';']);
-            fprintf('%d: unpacked %s\n',iCategory,iterFile2);
+        if exist(iterFile2,'file') 
+            if (length(dir([iterDir categories{iCategory} '*.JPEG'])) == 0)
+                system(['cd ' iterDir '; ' ...
+                        'tar xf ' iterFile2 '; ' ...
+                        'cd ' imgDir ';']);
+                fprintf('%d: unpacked %s\n',iCategory,iterFile2);
+            else
+                fprintf('%d: no work\n',iCategory);
+            end
         end
     end
 end
