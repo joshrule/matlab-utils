@@ -2,11 +2,6 @@ function prepareImageNetArchives(imgDir)
     conditionalUnpack(imgDir,listImageNetCategories(imgDir));
 end
 
-function categories = listImageNetCategories(imgDir)
-   files = dir([imgDir 'n*']);
-   categories = unique(regexp({files.name}','n\d+','match','once'));
-end
-
 function conditionalUnpack(imgDir,categories)
     parfor iCategory = 1:length(categories)
         iterDir = [imgDir categories{iCategory} '/'];

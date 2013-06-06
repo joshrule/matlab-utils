@@ -1,4 +1,4 @@
-function classificationValues = classifyResponses(x,y,training,classifier,options)
+function [classificationValues,model] = classifyResponses(x,y,training,classifier,options)
 %
 % a set of classification values for binary classification over an image set
 %
@@ -8,6 +8,7 @@ function classificationValues = classifyResponses(x,y,training,classifier,option
 % classifier: a string, the classifier to use, svm or gentleboost
 %
 % classificationValues: the classification estimates from the classifier
+% model: the classifier generating the estimates
 
     if (nargin < 5) options = []; end;
     trainX = x(:, training)';
