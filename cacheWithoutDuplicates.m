@@ -65,9 +65,6 @@ function [count,imgFilesOut] = duplicateFreeImgFiles(imgList,catDir,nImgs,imgFil
             duplicates(toReplace) = 0;
         elseif ~notDuplicate && iImg <= nImgs
             duplicates(iImg) = 1;
-            fprintf('-: %s',output);
-        else
-            fprintf('%s',output);
         end
         iImg = iImg+1;
     end

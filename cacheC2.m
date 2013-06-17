@@ -1,4 +1,5 @@
-function  imgFiles = cacheC2(outFile,patchFile,maxSize,masterImgFiles)
+function imgFiles = cacheC2(outFile,patchFile,maxSize,masterImgFiles)
+% imgFiles = cacheC2(outFile,patchFile,maxSize,masterImgFiles)
     [~,patchSet,~] = fileparts(patchFile);
     if exist(outFile,'file')
         load(outFile,'c2','imgFiles');
