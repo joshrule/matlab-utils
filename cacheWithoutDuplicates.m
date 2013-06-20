@@ -1,5 +1,5 @@
-function [cachedCategories,imgList] = cacheWithoutDuplicates(imgDir,outDir,categories,patchFile,maxSize,nImgs,imgListIn)
-% [cachedCategories,imgList] = cacheWithoutDuplicates(imgDir,outDir,categories,patchFile,maxSize,nImgs,imgListIn)
+function [cachedCategories,imgList] = cacheWithoutDuplicates(imgDir,outDir,categories,patchFile,maxSize,nImgs,hmaxHome,imgListIn)
+% [cachedCategories,imgList] = cacheWithoutDuplicates(imgDir,outDir,categories,patchFile,maxSize,nImgs,hmaxHome,imgListIn)
 %
 % store C2 activations for a given patch set.
     [~,patchSet,~] = fileparts(patchFile);
@@ -24,7 +24,7 @@ function [cachedCategories,imgList] = cacheWithoutDuplicates(imgDir,outDir,categ
             cachedCategories = [cachedCategories categories{iCategory}];
             fprintf('%d (%d): found %s, no duplicates\n',iCategory,length(imgList),outFile);
         elseif count == nImgs
-            cachedFiles = cacheC2(outFile,patchFile,maxSize,newImgFiles);
+            cachedFiles = cacheC2(outFile,patchFile,maxSize,newImgFiles,hmaxHome);
             imgList = {imgList{:} cachedFiles{:}};
             cachedCategories = [cachedCategories categories{iCategory}];
             fprintf('%d: cached %s, new cache\n',iCategory,outFile);

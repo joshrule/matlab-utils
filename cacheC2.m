@@ -1,4 +1,4 @@
-function imgFiles = cacheC2(outFile,patchFile,maxSize,masterImgFiles)
+function imgFiles = cacheC2(outFile,patchFile,maxSize,masterImgFiles,hmaxHome)
 % imgFiles = cacheC2(outFile,patchFile,maxSize,masterImgFiles)
     [~,patchSet,~] = fileparts(patchFile);
     if exist(outFile,'file')
@@ -11,7 +11,7 @@ function imgFiles = cacheC2(outFile,patchFile,maxSize,masterImgFiles)
         newImgs = masterImgFiles;
         cacheInds = 1:length(masterImgFiles);
     end
-    hmaxOCV(newImgs,patchFile,maxSize);
+    hmaxOCV(newImgs,patchFile,hmaxHome,maxSize);
     c2 = xmlC22matC2(masterImgFiles,patchSet);
     imgFiles = masterImgFiles;
     save(outFile,'c2','imgFiles','patchFile','maxSize');
