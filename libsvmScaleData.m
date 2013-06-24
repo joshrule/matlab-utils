@@ -1,31 +1,22 @@
-function [scaledData, lowerVals, upperVals] = scaleLIBSVMdata(data, lowerVals, upperVals, lower, upper)
+function [scaledData, lowerVals, upperVals] = scaleLIBSVMdata(data, lower, upper, lowerVals, upperVals)
 % [scaledData, lowerVals, upperVals] = scaleLIBSVMdata(data, lower, upper, lowerVals, upperVals)
 %
 % scale LIBSVM data to sit within lower and upper
 %
-% args:
+% data: an nExamples x nFeatures array of examples
+% lower: the lower limit for scaled data
+% upper: the upper limit for scaled data
+% lowerVals: the lowest value for each feature (useful for scaling test data)
+% upperVals: the highest value for each feature (useful for scaling test data)
 %
-%     data: an nExamples x nFeatures array of examples
-%
-%     lower: the lower limit for scaled data
-%
-%     upper: the upper limit for scaled data
-%
-%     lowerVals: the lowest value for each feature (useful for scaling test data)
-%
-%     upperVals: the highest value for each feature (useful for scaling test data)
-%
-% returns: 
-%
-%     scaledData: an nExamples x nFeatures array of scaled examples with range
-%     [lower, upper]
-%
-%     lowerVals, upperVals: as above
+% scaledData: an nExamples x nFeatures array of scaled examples with range
+%   [lower, upper]
+% lowerVals, upperVals: as above
 
-if (nargin < 5) upper =  1; end;
-if (nargin < 4) lower =  0; end;
-if (nargin < 3) upperVals = max(data); end;
-if (nargin < 2) lowerVals = min(data); end;
+if (nargin < 5) upperVals = max(data); end;
+if (nargin < 4) lowerVals = min(data); end;
+if (nargin < 3) upper =  1; end;
+if (nargin < 2) lower =  0; end;
 
 % scale data
 scaledData = NaN(size(data));

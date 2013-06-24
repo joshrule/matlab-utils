@@ -17,14 +17,19 @@ function [classificationValues,model] = classifyResponses(x,y,training,classifie
     testY  = y(~training)';
     switch lower(classifier)
       case {'svm','libsvm'}
-        if isempty(options) options = '-q -t 0 -b 1'; end;
+        if isempty(options) options = '-q -t 0 -s 0 -b 1'; end;
+        [trainX,minVals,maxVals] = libsvmScaleData(trainX,0,1);
+        c = libsvmChooseParameters(trainY,trainX);
+        fullOptions = [options ' -c ' num2str(c)];
         model = svmtrain(trainY,trainX,options);
-        [~,~,allVals] = svmpredict(testY,testX, model,'-b 1');
+        testX = libsvmScaleData(testX,0,1,minVals,maxVals);
+        [~,~,allVals] = svmpredict(testY,testX,model,'-b 1');
         classificationValues = allVals(:,2-trainY(1));
       case {'gb','gentleboost'}
         if isempty(options) options = 100; end;
         trainY = double(trainY).*2 - 1; % [0,1] -> [-1,1]
         model = gentleBoost(trainX',trainY',options);
+        model
         [~,classificationValues] = strongGentleClassifier(testX',model);
       otherwise
         classificationValues = [];
