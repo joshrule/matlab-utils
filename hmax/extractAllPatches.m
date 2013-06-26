@@ -1,8 +1,16 @@
 function [patches locations bands] = extractAllPatches(c1r,patchSize)
 % [patches locations bands] = extractAllPatches(c1r,patchSize)
-% Author: Josh Rule
 %
+% given a C1 response for an image, extract all possible patches of a given size
 % key assumption: a single c1 activation and a single patch size
+%
+% c1r: cell array, a C1 response (see 'C1.m' in 'hmax')
+% patchSize: double array, a vector of length 3 detailing the number of rows,
+%   columns, and orientations, respectively, to use in building patches
+%
+% patches: double array, the extracted patches
+% locations: double array, an [nPatches 2] array of patch locations in C1-space
+% bands: double array, an nPatches vector of the bands each patch was taken from
     nBands = length(c1r);
     preBands = cell(nBands,1);
     preLocations = cell(nBands,1);

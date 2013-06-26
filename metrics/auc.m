@@ -1,28 +1,22 @@
-function auc = auc(predicted,actual,targLabel,dtorLabel)
-% auc = auc(predicted,actual,targLabel,dtorLabel)
+function auc = auc(predicted,actual,posLabel,negLabel)
+% auc = auc(predicted,actual,posLabel,negLabel)
 %
 % generates a ROC area (AUC) from classification results
 %
-% args:
+% predicted: double aray, vector of classification values
+% actual: double array, vector of ground truth labels
+% posLabel, negLabel: the actual tokens used as labels
 %
-%     predicted: a vector, results of the classifier
-%
-%     actual: a vector, ground truth labels
-%
-%     targLabel, dtorLabel: the actual tokens used as labels
-%
-% returns: auc, a scalar, the area under the ROC curve (AUC) 
-
-    if (nargin < 3) targLabel = 1; dtorLabel = 0; end;
+% auc: scalar double, the area under the ROC curve (AUC) 
+    if (nargin < 3) posLabel = 1; negLabel = 0; end;
 
     % Count observations by class
-    nTargets     = sum(double(actual == targLabel));
-    nDistractors = sum(double(actual == dtorLabel));
+    nPos = sum(double(actual == posLabel));
+    nNeg = sum(double(actual == negLabel));
 
     % Rank data
     R = tiedrank(predicted);
 
     % Calculate AUC
-    auc = (sum(R(actual == targLabel)) - (nTargets^2 + nTargets)/2) /...
-          (nTargets * nDistractors);
+    auc = (sum(R(actual == posLabel)) - (nPos^2 + nPos)/2)/(nPos * nNeg);
 end

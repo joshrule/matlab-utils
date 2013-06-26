@@ -1,5 +1,5 @@
 function p = randomPatches(sizes)
-% patches = randomPatches(imgNames, patchSpecs,method)
+% p = randomPatches(sizes)
 %
 % generate a set of random patches
 %
@@ -7,7 +7,6 @@ function p = randomPatches(sizes)
 % m = nPatchSizes and 4 rows = [rows; columns; depth; patchesPerSize]
 %
 % p: a cell array of length nPatchSizes, the patches
-
     p = arrayfun(@(x) rand(prod(sizes(1:3,x)),sizes(4,x)),...
                  1:size(sizes,2),...
                  'UniformOutput',0);

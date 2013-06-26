@@ -1,8 +1,13 @@
 function prepareImageNetArchives(imgDir)
-    conditionalUnpack(imgDir,listImageNetCategories(imgDir));
-end
-
-function conditionalUnpack(imgDir,categories)
+% prepareImageNetArchives(imgDir)
+%
+% Unpack any downloaded but as yet unpacked ImageNet synset archives in the
+% given directory. The archives are the *.tar files originally provided by
+% ImageNet.
+%
+% imgDir: string, the directory to search for ImageNet synset archives
+    files = dir([imgDir 'n*']);
+    categories = listImageNetCategories({files.name});
     parfor iCategory = 1:length(categories)
         iterDir = [imgDir categories{iCategory} '/'];
         iterFile1 = [imgDir categories{iCategory} '.tar'];

@@ -3,15 +3,14 @@ function features = chooseFeatures(x,y,featureClasses,k)
 %
 % given a set of examples, choose a subset of features for classification
 %
-% x: an [nFeatures nExamples] array holding feature values.
-% y: a [nClasses nExamples] array,  the class labels of examples in x.
-% featureClasses: a vector of length nFeatures, the class from which each 
+% x: [nFeatures nExamples] array holding feature values.
+% y: [nClasses nExamples] array,  the class labels of examples in x.
+% featureClasses: vector of length nFeatures, the class from which each 
 %     feature was drawn.
-% k: a scalar, if 0 < k < 1, k*nFeatures features will be selected. 
+% k: scalar, if 0 < k < 1, k*nFeatures features will be selected. 
 %     If k >= 1, min(k,nFeatures) will be selected.
 %
-% features: a vector, the indices of the chosen features
-
+% features: vector, the indices of the chosen features
     if (nargin < 4) k = size(x,1); end;
 
     if (nargin < 3) featureClasses = []; end;

@@ -1,3 +1,13 @@
+# Similarity.pl
+# 
+# given two ImageNet synsets, return the semantic distance between the
+# respective concepts as judged by the Wu-Palmer distance in WordNet 3.0.
+#
+# $ARGV[0]: a string, the first synset
+# $ARGV[1]: a string, the second synset
+#
+# $value: a string, the distance between the two synset concepts
+
 use WordNet::QueryData;
 use WordNet::Similarity::wup;
 

@@ -1,24 +1,24 @@
-function c2 = genC2(gaborSpecs,imgNames,c1bands,linPatches,patchSpecs,USEMATLAB,maxSize)
-% c2 = genC2(gaborSpecs,imgNames,c1bands,linPatches,patchSpecs,USEMATLAB,maxSize)
+function c2 = genC2(gaborSpecs,imgNames,c1bands,linPatches,patchSpecs, ...
+  USEMATLAB,maxSize)
+% c2 = genC2(gaborSpecs,imgNames,c1bands,linPatches,patchSpecs, ...
+% USEMATLAB,maxSize)
 % 
 % give C2 responses for an image set
 %
-% gaborSpecs: a struct, holds information needed for creating S1 filters
-% imgNames: a cell array, a list of filenames in the image set
-% c1bands: a struct, holds information about bands and scales in C1
-% linPatches: a cell array, the patches, before being reshaped
-% patchSpecs:  a 4 x m array, 
+% gaborSpecs: struct, holds information needed for creating S1 filters
+% imgNames: cell array, a list of filenames in the image set
+% c1bands: struct, holds information about bands and scales in C1
+% linPatches: cell array, the patches, before being reshaped
+% patchSpecs:  4 x m array, 
 % m = nPatchSizes and 4 rows = [rows; columns; depth; patchesPerSize]
-% USEMATLAB: a boolean, if true, use HMAX-MATLAB, else use HMAX-CUDA
+% USEMATLAB: logical, if 1 use HMAX-MATLAB, otherwise use HMAX-CUDA
 %
-% c2, an nPatches x nImgs array, C2 responses for an image set
-
+% c2: nPatches x nImgs array, C2 responses for an image set
     if (nargin < 7) maxSize = bitmax; end;
     if (nargin < 6) USEMATLAB = 1; end;
 
     [filterSizes,linFilters,c1OL,~] = initGabor(gaborSpecs.orientations,...
-                                                gaborSpecs.receptiveFieldSizes,...
-                                                gaborSpecs.div);
+       gaborSpecs.receptiveFieldSizes,gaborSpecs.div);
 
     % create square filters (S1)
     nFilters = length(filterSizes);
@@ -39,7 +39,9 @@ function c2 = genC2(gaborSpecs,imgNames,c1bands,linPatches,patchSpecs,USEMATLAB,
             for iOrient = 1:nOrientations
                 patchStart = 1+(iOrient-1)*nElements;
                 patchStop = iOrient*nElements;
-                patches{iPatch} = reshape(linPatches{iSize}(patchStart:patchStop,iLinearPatch),dimPatch);
+                patches{iPatch} = ...
+                  reshape(linPatches{iSize}(patchStart:patchStop, ...
+                  iLinearPatch),dimPatch);
                 iPatch = iPatch+1;
             end
         end
@@ -50,7 +52,8 @@ function c2 = genC2(gaborSpecs,imgNames,c1bands,linPatches,patchSpecs,USEMATLAB,
         iStart = 1+(iImg-1)*20;
         iStop = min(iStart+20-1,length(imgNames));
         fprintf('%d: start: %d stop: %d\n',iImg,iStart, iStop);
-        imgs = cellfun(@(x) double(resizeImage(grayImage(imread(x)),maxSize)),imgNames(iStart:iStop),'UniformOutput',0);
+        imgs = cellfun(@(x) double(resizeImage(grayImage(imread(x)), ...
+          maxSize)),imgNames(iStart:iStop),'UniformOutput',0);
         tooBig = false;
         for i = 1:length(imgs)
             tooBig = tooBig || max(size(imgs{i})) > 1024;
@@ -75,6 +78,16 @@ function c2 = genC2(gaborSpecs,imgNames,c1bands,linPatches,patchSpecs,USEMATLAB,
 end
 
 function c2 = hmaxCudaFun(filters,patches,imgs,maxImgs)
+% c2 = hmaxCudaFun(filters,patches,imgs,maxImgs)
+%
+% helper function to allow parfor
+%
+% filters: cell array of double arrays, the S1 filters
+% patches: cell array of double arrays, the S2 filters
+% imgs: cell array of double arrays, the images
+% maxImgs: double scalar, the maximum number of images processed at one time
+%
+% c2: double array, the C2 matrix
     c2 = zeros(length(patches)/4,maxImgs);
     for i = 1:ceil(length(patches)/2048);
         startIn = 1+2048*(i-1);

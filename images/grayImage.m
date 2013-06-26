@@ -6,7 +6,6 @@ function imgOut = grayImage(imgIn)
 % imgIn:  an array representing an image
 %
 % imgOut: an array representing a grayscaled image
-
     if size(imgIn,3) == 3
         imgOut = double(rgb2gray(imgIn));
     else

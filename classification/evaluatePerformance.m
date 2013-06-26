@@ -1,5 +1,23 @@
 function [aucs,dprimes,models] = evaluatePerformance(x,y,cv,method,options,nFeatures,classOrigin)
 % [aucs,dprimes,models] = evaluatePerformance(x,y,cv,method,options,nFeatures,classOrigin)
+%
+% Give AUC and d' scores using cross-validation over a set of examples and labels
+%
+% x: [nFeatures nExamples] array, the feature values
+% y: [nClasses nExamples] array, the class labels of examples in x
+% classifier: a string, the classifier to use, svm or gentleboost
+% cv: cell array of vectors, the train/test splits, where 1 = train, 0 = test
+% method: string, 'svm' or 'gb', use SVM or GentleBoost
+% options: options for the classifier
+% nFeatures: scalar, the number of Features to use for classification, must be
+%   less than the total number of features in x
+% classOrigin: nExamples vector, denotes the class of origin for each example
+%   and is used solely for choosing features. If empty, features are chosen at
+%   random. Otherwise, the top features per class are chosen by FI (fisher.m)
+%
+% aucs: [nClasses, nTrainingExamples, nRuns] array, the AUC scores
+% dprimes: [nClasses, nTrainingExamples, nRuns] array, the d' scores
+% models: [nClasses, nTrainingExamples, nRuns] cell, the classifiers
     [nClasses,nTrainingExamples,nRuns] = size(cv);
     aucs = zeros(nClasses,nTrainingExamples,nRuns);
     dprimes = zeros(nClasses,nTrainingExamples,nRuns);

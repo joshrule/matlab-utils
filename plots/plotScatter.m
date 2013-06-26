@@ -1,15 +1,31 @@
-function plotScatter(v1,v2,label1,label2)
-    clf; f = figure();
+function plotScatter(v1,v2,legendLabels,xLabel,yLabel,plotTitle,plotFile,ticks)
+% plotScatter(v1,v2,legendLabels,xLabel,yLabel,plotTitle,plotFile,ticks)
+%
+% write a scatter plot to disk
+%
+% ms: cell array of double arrays, the matrices to plot
+% legendLabels: cell array of strings, the entries for the legend
+% xLabel: string, the label for the x-axis
+% yLabel: string, the label for the y-axis
+% plotTitle: string, the label for the entire plot
+% plotFile: string, the absolute path to which to write the image on disk
+% ticks: r vector, where r is the number of rows in the data
+    clf;
+
     hold all;
     scatter(v1,v2);
     hold off;
 
-    xlabel(label1);
-    ylabel(label2);
-    title('Mean FI vs. Max FI across categories, Master Patches, 2x2, ImageNet');
-    % axis([0 10 0.45 1.0]);
-    % legend('item 1','item 2','Location','Best'); legend boxoff;
-    %set(gca,'XTick',0:10); set(gca,'XTickLabel',{'0','2','4','8','16','32','64','128','162','196','...'});
-    %plot2svg('~/Dropbox/josh/inbox/imgOut.svg',f);
-    print(f,'-dpng','~/Dropbox/josh/inbox/master-patches-FI-scatterplot.png');
+    xlabel(xLabel);
+    ylabel(yLabel);
+    title(plotTitle);
+
+    axis([0 length(ticks)+1 floor(v2) ceil(v2)]);
+    set(gca,'YTickLabel', ...
+      ['0' regexp(sprintf('%i ',ticks),'(\d+)','match') '...']);
+
+    legend(legendLabels{:},'Location','Best');
+    legend boxoff;
+
+    plot2svg(plotFile,f);
 end

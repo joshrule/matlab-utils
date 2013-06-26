@@ -3,22 +3,14 @@ function [predictions, accuracy] = kmeansPredict(model,examples,labels)
 %
 % multiclass predictions using a k-means classifier
 %
-% args:
+% model: a k x n matrix, where k = nClasses and n = nDimensions
+% examples: an p x n matrix, where p = nExamples and n = nDimensions
+% labels: a vector of length p, the labels for each example. Labels should
+%   be in the range 1:k, where k = nClasses
 %
-%     model: a k x n matrix, where k = nClasses and n = nDimensions
-%
-%     examples: an p x n matrix, where p = nExamples and n = nDimensions
-%
-%     labels: a vector of length p, the labels for each example. Labels should
-%     be in the range 1:k, where k = nClasses
-%
-% returns:
-%
-%     predictions: a vector of length p, where p = nExamples, class
-%     predictions. The format is the same as for labels.
-%
-%     accuracy: a scalar, the overall accuracy of the classification
-
+% predictions: a vector of length p, where p = nExamples, class
+%   predictions. The format is the same as for labels.
+% accuracy: a scalar, the overall accuracy of the classification
     if (nargin < 3) labels = []; accuracy = nan; end;
 
     nExamples = size(examples,1);

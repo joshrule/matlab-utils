@@ -1,18 +1,31 @@
-function plotHeat(m,key)
-
-    clf; f = figure();
+function plotHeat(m,barLabel,xLabel,yLabel,plotTitle,plotFile,ticks)
+% plotHeat(m,barLabel,xLabel,yLabel,plotTitle,plotFile,ticks)
+%
+% plot a heatmap
+%
+% m: double array, the matrix to plot
+% barLabel: string, the label for the colorbar
+% xLabel: string, the label for the x-axis
+% yLabel: string, the label for the y-axis
+% plotTitle: string, the label for the entire plot
+% plotFile: string, the absolute path to which to write the image on disk
+% ticks: r vector, where r is the number of rows in the data
+    clf;
 
     imagesc(m);
 
     h = colorbar;
-    set(get(h,'xlabel'),'string',key);
-    caxis([0 max(max(m))]);
+    set(get(h,'xlabel'),'string',barLabel);
+    caxis([0 max(m(:))]);
 
-    xlabel('Category');
-    ylabel('# Training Examples');
-    set(gca,'YTickLabel',{'2','4','8','16','32','64','128','160','196','228'});
-    title('Individual Effects of # Training Examples (400 patches/size, ImageNet)');
-%   axis([0.5 10.5 0.5 9.5])
+    set(gcf,'DefaultTextInterpreter','None');
+    xlabel(xLabel);
+    ylabel(yLabel);
+    set(gca,'YTickLabel', ...
+      ['0' regexp(sprintf('%i ',ticks),'(\d+)','match') '...']);
+    title(plotTitle);
     axis xy
 
-    print(f, '-dpng', '~/Dropbox/josh/inbox/c3.individual-results.d-prime-heat.png');
+    plotFixFonts(gca,11);
+    plot2svg(plotFile,gcf);
+end

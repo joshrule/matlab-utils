@@ -1,6 +1,11 @@
 function mSigmoid = sigmoid(m)
-% m is a 2-d examples x features matrix
-% sigmoid scales features to sit on a sigmoid rather than some other curve
+% mSigmoid = sigmoid(m)
+%
+% scale a matrix to sit on a sigmoid rather than a line
+%
+% m: double array, the raw matrix
+%
+% mSigmoid: the sigmoid matrix
     a = min(m,[],1);
     b = max(m,[],1);
     m0To1 = bsxfun(@times,bsxfun(@minus,m,a),((b-a).^-1));

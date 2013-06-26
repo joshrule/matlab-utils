@@ -1,5 +1,7 @@
-function [scaledData, lowerVals, upperVals] = scaleLIBSVMdata(data, lower, upper, lowerVals, upperVals)
-% [scaledData, lowerVals, upperVals] = scaleLIBSVMdata(data, lower, upper, lowerVals, upperVals)
+function [scaledData, lowerVals, upperVals] = scaleLIBSVMdata(data, lower, ...
+  upper, lowerVals, upperVals)
+% [scaledData, lowerVals, upperVals] = scaleLIBSVMdata(data, lower, upper, ...
+%   lowerVals, upperVals)
 %
 % scale LIBSVM data to sit within lower and upper
 %
@@ -30,8 +32,8 @@ for iExample = 1:size(data,1)
             scaledData(iExample,iFeature) = upper;
         else % intermediate value
             scaledData(iExample,iFeature) = lower + (upper-lower) * ...
-                                            (data(iExample,iFeature)-lowerVals(iFeature)) / ...
-                                            (upperVals(iFeature)-lowerVals(iFeature));
+              (data(iExample,iFeature)-lowerVals(iFeature)) / ...
+              (upperVals(iFeature)-lowerVals(iFeature));
         end
     end
 end

@@ -1,5 +1,13 @@
-function plotClusterFig(imgDir,ext,r,c)
-% plotClusterFig(clusts,patches,maxSize,c1Scale,c1Space,rfSizes,outDir)
+function plotDirSample(imgDir,ext,r,c,plotFile)
+% plotDirSample(imgDir,ext,r,c,plotFile)
+%
+% given a directory of images and a grid size, plot a grid of images 
+%
+% imgDir: string, the absolute path of an image directory
+% ext: string, the extension of the images in the directory
+% r: scalar double, the number of rows in the grid
+% c: scalar double, the number of columns in the grid
+% plotFile: string, the absolute path to which to write the image on disk
     clf;
     potentialImages = dir([imgDir '*.' ext]);        
     potentialNames = strcat(imgDir, {potentialImages.name});
@@ -11,4 +19,5 @@ function plotClusterFig(imgDir,ext,r,c)
         axis image;
         axis off;
     end
+    plot2svg(plotFile,gcf);
 end

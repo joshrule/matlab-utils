@@ -1,13 +1,12 @@
 function imgs = drawBoundingBox(imgList,thickness)
-% imgs = drawBoundingBox(imgList,color)
+% imgs = drawBoundingBox(imgList,thickness)
 %
 % return images with bounding box drawn around target
 %
-% imgList: a cell array, each entry is an absolute path for an image
-% thickness: a scalar, the thickness of the border
+% imgList: cell array of strings, each string is an absolute path for an image
+% thickness: double scalar, the thickness of the border in pixels
 %
-% imgs: a cell array, the images with drawn bounding boxes
-
+% imgs: cell array of double arrays, the images with drawn bounding boxes
     rawImgs = readImages(imgList);
 
     for i = 1:length(imgList)

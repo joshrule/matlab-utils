@@ -6,37 +6,23 @@ function [ROCareas, diversities, patchUpdateCounts, initialPatches, learningPatc
 % slightly more like the area in a testing image which maximally activated the
 % patch.
 %
-% args:
+% nTrainingRounds: # of times new patches are learned per experiment
+% imgNames: names of images available for patch extraction and testing
+% imgLabels: class labels for the images
+% c1bands: information about what c1 bands to use
+% gaborSpecs: information about the gabor filters to use
+% patchSpecs: information about what size and number of patches to generate
+% decayType: 'exponential' or 'linear', how learning decays
+% patchType: 'random' or 'extracted', how patches are initialized
 %
-%     nTrainingRounds: # of times new patches are learned per experiment
-%
-%     imgNames: names of images available for patch extraction and testing
-%
-%     imgLabels: class labels for the images
-%
-%     c1bands: information about what c1 bands to use
-%
-%     gaborSpecs: information about the gabor filters to use
-%
-%     patchSpecs: information about what size and number of patches to generate
-%
-%     decayType: 'exponential' or 'linear', how learning decays
-%
-%     patchType: 'random' or 'extracted', how patches are initialized
-%
-% returns: 
-%
-%     ROCareas: an nTrainingRounds x nPercentBests matrix of ROC areas showing
-%     the algorithm's effectiveness
-%
-%     diversities: an nTrainingRounds x nPercentBests matrix measuring the
-%     similarity of patches generated
-%
-%     patchUpdateCounts: an nTrainingRounds x nPercentBests x nPatches x
-%     nPatches matrix showing how frequently each patch is updated
-%
-%     learningpatches: the final sets of generated patches, one for each
-%     percentage level of patches updated
+% ROCareas: an nTrainingRounds x nPercentBests matrix of ROC areas showing
+%   the algorithm's effectiveness
+% diversities: an nTrainingRounds x nPercentBests matrix measuring the
+%   similarity of patches generated
+% patchUpdateCounts: an nTrainingRounds x nPercentBests x nPatches x
+%   nPatches matrix showing how frequently each patch is updated
+% learningpatches: the final sets of generated patches, one for each
+%   percentage level of patches updated
 
 patchSizes = patchSpecs.patchSizes;
 nPatchSizes = size(patchSizes,2);
@@ -179,6 +165,15 @@ end % MAIN LEARNING LOOP
 
 
 function patchRanks = visualRank(sortedIndices)
+% patchRanks = visualRank(sortedIndices)
+%
+% create a matrix which "visually" ranks entries such that the number of 0s
+% in the row for a given entry indicates its ranking
+%
+% sortedIndices: double array, a unique vector of entry ranks such that
+%   sortedIndices(i) indicates the rank of the ith entry.
+%
+% patchRanks: double array, the completed ranking
 nPatches = size(sortedIndices,1);
 patchRanks = zeros(nPatches,nPatches); % row = patch index, col = ranking
 % for the patch ranked i, insert 1 for ranks >= i 
