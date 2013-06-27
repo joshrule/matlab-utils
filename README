@@ -1,0 +1,29 @@
+README for 'utils'
+
+This directory holds various small tools and utilities I've created for working
+with HMAX, manipulating images, computing binary classification, working with
+ImageNet, and analyzing data.
+
+  - classification/: classifiers and a function for running and scoring
+    classifiers
+
+  - ensureDir.m: a function that does nothing if a directory exists, but creates
+    it otherwise. The return value is the absolute path of the directory
+
+  - hmax/: tools for generating patch sets, C2 activations and so on. These are
+    mostly wrappers and helper functions for use with HMAX-MATLAB.
+
+  - imageNet/: tools for downloading and extracting ImageNet synsets.
+
+  - images/: tools for manipulating matrices that represent images.
+
+  - metrics/: tools to score/evaluate/analyze data
+
+  - plots/: tools to plot data
+
+  - README: this file
+
+  - scaling/: tools to scale a series of data
+
+  - similarity.pl: a script to calculate the semantic distance between two
+    WordNet concepts.
