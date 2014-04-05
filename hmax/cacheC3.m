@@ -12,8 +12,8 @@ function imgFiles = cacheC3(outFile,c2File,modelFile,paramFile,models)
 %
 % imgFiles: cell array of strings, the images processed
     if (nargin < 5) load(modelFile,'models'); end;
-    load(paramFile,'params');
+    load(paramFile,'method');
     load(c2File,'imgFiles','c2');
-    c3 = testC3(c2,models,params.method)
+    c3 = testC3(c2,models,method);
     save(outFile,'c3','imgFiles','modelFile','paramFile');
 end

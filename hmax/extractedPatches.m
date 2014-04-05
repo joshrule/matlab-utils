@@ -22,9 +22,11 @@ function ps = extractedPatches(c1r,patchSizes,maxOverlap,corrThreshold)
     ps.sizes = [];
     ps.locations = [];
 
-    for iSize = 1:nPatchSizes
+    for iSize = nPatchSizes:-1:1
         ps.patches{iSize} = [];
+	fprintf('%d: ',iSize);
         for iPatch = 1:patchSizes(4,iSize)
+            if mod(iPatch,100) == 0, fprintf('%d ',iPatch); end;
             huntingPatch = 1;
             while huntingPatch
                 chosenImg = randi(nImgs);
@@ -49,6 +51,7 @@ function ps = extractedPatches(c1r,patchSizes,maxOverlap,corrThreshold)
                 end
             end
         end
+	fprintf('\n');
     end
 end
 

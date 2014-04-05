@@ -12,5 +12,5 @@ function [pOut,labels] = universalPatches(pIn,k)
 %
 % pOut: cell array of patch matrices, the universal patches (centroids)
 % labels: cell array, the centroids to which each patch from pIn was assigned
-    [labels,pOut] = cellfun(@(x) kmeans(x,k),pIn,'UniformOutput',0);
+    [labels,pOut] = cellfun(@(x) kmeansPlusPlus(x,k),pIn,'UniformOutput',0);
 end
