@@ -14,6 +14,6 @@ function imgFiles = cacheC3(outFile,c2File,modelFile,paramFile,models)
     if (nargin < 5) load(modelFile,'models'); end;
     load(paramFile,'params');
     load(c2File,'imgFiles','c2');
-    c3 = testC3(c2,models,params.method)
+    c3 = testC3(c2,models,params.method);
     save(outFile,'c3','imgFiles','modelFile','paramFile');
 end
