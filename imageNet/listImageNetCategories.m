@@ -7,5 +7,5 @@ function wnids = listImageNetCategories(files)
 % files: cell array of strings, the file names including WNIDS
 %
 % wnids: cell array of strings, the isolated wnids
-   wnids = unique(regexp(files,'n\d+','match','once'));
+   wnids = regexp(files,'n\d+','match','once');
 end
