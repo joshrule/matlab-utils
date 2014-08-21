@@ -13,6 +13,7 @@ function pairwiseFeatureCorrelations(imgList,c2,c3,nPairs,maxSize,simFile,outFil
 % outFile: string, where on disk to write the results
     pairs = {};
     for iPair = 1:nPairs
+        if mod(iPair,100) == 0, fprintf('%d\n',iPair); end;
         [pairs{iPair,1},pairs{iPair,2},img1,img2] = newPair(imgList,pairs);
 %       pixelCorr(iPair) = pixelBasedImageCorrelation( ...
 %         pairs{iPair,1},pairs{iPair,2},maxSize);
