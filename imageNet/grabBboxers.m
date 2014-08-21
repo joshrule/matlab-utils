@@ -1,5 +1,5 @@
 function downloadImageNetSynsets(wnids,user,key,structureReleased,imgDir)
-% downloadImageNetSynsets(wnids,user,key)
+% downloadImageNetSynsets(wnids,user,key,structureReleased,imgDir)
 %
 % download ImageNet synsets from the ImageNet server
 %
@@ -24,7 +24,7 @@ function downloadImageNetSynsets(wnids,user,key,structureReleased,imgDir)
                 catch err
                     attempts = attempts + 1;
                     fprintf('%d failed with: %s\n',i,getReport(err,'basic'));
-                    system(['rm ' imgDir 'DownloadStatus.xml');
+                    system(['rm ' imgDir 'DownloadStatus.xml']);
                 end
             end
         end
