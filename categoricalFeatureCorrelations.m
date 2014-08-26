@@ -1,5 +1,5 @@
 function categoricalFeatureCorrelations(labels,imgNames,c2,c3,c3Wnids, ...
-  targetWnids,N,outDir,simFile,blockSize,maxSize)
+  targetWnids,N,outDir,simFile,maxSize)
 % categoricalFeatureCorrelations(labels,imgNames,c2,c3,c3Wnids, ...
 %   targetWnids,N,outDir,simFile)
 %
@@ -15,7 +15,6 @@ function categoricalFeatureCorrelations(labels,imgNames,c2,c3,c3Wnids, ...
 % outDir: string, in which directory on disk to write the results
 % simFile: string, where on disk to find the perl file allowing semantic
 %   distance calculations.
-% blockSize: 2 vector, the rows and columns of the pixel blocks
 % maxSize: scalar, maximum edge length when resizing images
     % [~,~,pixelScores] = pixelBasedMetrics(imgNames,blockSize,maxSize);
     % save([outDir 'pixelScores.mat'],'pixelScores','blockSize','maxSize');
