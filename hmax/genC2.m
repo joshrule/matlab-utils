@@ -52,18 +52,13 @@ function c2 = genC2(gaborSpecs,imgNames,c1bands,linPatches,patchSpecs, ...
         iStart = 1+(iImg-1)*20;
         iStop = min(iStart+20-1,length(imgNames));
         fprintf('%d: start: %d stop: %d\n',iImg,iStart, iStop);
-        imgs = cellfun(@(x) double(resizeImage(grayImage(imread(x)), ...
-          maxSize)),imgNames(iStart:iStop),'UniformOutput',0);
-        tooBig = false;
-        for i = 1:length(imgs)
-            tooBig = tooBig || max(size(imgs{i})) > 1024;
-        end
-        if USEMATLAB || tooBig
+        imgs = imgNames(iStart:iStop);
+        if USEMATLAB
             c = extractC2FromCell(linFilters,filterSizes,...
                                    c1bands.c1Space,c1bands.c1Scale,...
                                    c1OL,linPatches,imgs,...
                                    size(patchSpecs,2),...
-                                   patchSpecs(1:3,:),0,[],0,0);
+                                   patchSpecs(1:3,:),0,[],0,0,maxSize);
             d = [reshape(c,[],1); zeros((20-size(c,2))*length(patches)/4,1)];
             parc2(:,iImg) = d;
         else
