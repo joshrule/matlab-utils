@@ -16,7 +16,7 @@ function prepareImageNetArchives(imgDir)
             system(['mkdir ' iterDir ';']);
         end
         if exist(iterFile1,'file') && exist(iterFile2,'file')
-            system(['rm ' iterDir categories{iCategory} '.tar;']);
+            system(['rm ' iterFile2]);
             fprintf('%d: removed %s\n',iCategory,iterFile1);
         elseif exist(iterFile1,'file')
             system(['mv ' iterFile1 ' ' iterFile2 ';']);
@@ -26,6 +26,7 @@ function prepareImageNetArchives(imgDir)
             if (length(dir([iterDir categories{iCategory} '*.JPEG'])) == 0)
                 system(['cd ' iterDir '; ' ...
                         'tar xf ' iterFile2 '; ' ...
+                        'rm ' iterFile2 '; ' ...
                         'cd ' imgDir ';']);
                 fprintf('%d: unpacked %s\n',iCategory,iterFile2);
             else

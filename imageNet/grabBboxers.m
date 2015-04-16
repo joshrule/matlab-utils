@@ -15,18 +15,22 @@ function downloadImageNetSynsets(wnids,user,key,structureReleased,imgDir)
            exist([imgDir wnids{i} '/'],'dir')
             fprintf('%d: already downloaded %s\n',i,word.words);
         else
-            attempts = 0;
-            while attempts <= 5
-                try
-                    downloadImages(imgDir,user,key,wnids{i},0); % not-recursive
-                    fprintf('%d: %s\n',i,word.words);
-                    attempts = bitmax;
-                catch err
-                    attempts = attempts + 1;
-                    fprintf('%d failed with: %s\n',i,getReport(err,'basic'));
-                    system(['rm ' imgDir 'DownloadStatus.xml']);
-                end
-            end
+            url = ['"http://www.image-net.org/download/synset?wnid=' wnids{i} ...
+                   '&username=' user '&accesskey=' key '&release=latest&src=stanford"'];
+            output = [imgDir wnids{i} '.tar'];
+            system(['wget -O ' output ' ' url]);
+%           attempts = 0;
+%           while attempts <= 5
+%               try
+%                   downloadImages(imgDir,user,key,wnids{i},0); % not-recursive
+%                   fprintf('%d: %s\n',i,word.words);
+%                   attempts = bitmax;
+%               catch err
+%                   attempts = attempts + 1;
+%                   fprintf('%d failed with: %s\n',i,getReport(err,'basic'));
+%                   system(['rm ' imgDir 'DownloadStatus.xml']);
+%               end
+%           end
         end
     end
 end

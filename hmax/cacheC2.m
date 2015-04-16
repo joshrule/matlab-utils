@@ -27,7 +27,9 @@ function imgFiles = cacheC2(outFile,patchFile,maxSize,masterImgFiles,hmaxHome)
     end
     hmaxOCV(newImgs,patchFile,hmaxHome,maxSize);
     newC2 = xmlC22matC2(newImgs,patchSet);
-    c2(:,cacheInds) = newC2;
+    if prod(size(newC2)) > 0
+        c2(:,cacheInds) = newC2;
+    end
     imgFiles = masterImgFiles;
     save(outFile,'c2','imgFiles','patchFile','maxSize');
 end

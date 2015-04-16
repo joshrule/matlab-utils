@@ -1,4 +1,4 @@
-function [aucs,dprimes,models,classVals] = evaluatePerformance(x,y,cv,method,options,nFeatures,classOrigin)
+function [aucs,dprimes,models,classVals,features] = evaluatePerformance(x,y,cv,method,options,nFeatures,classOrigin,type)
 % [aucs,dprimes,models,classVals] = evaluatePerformance(x,y,cv,method,options,nFeatures,classOrigin)
 %
 % Give AUC and d' scores using cross-validation over a set of examples and labels
@@ -19,6 +19,7 @@ function [aucs,dprimes,models,classVals] = evaluatePerformance(x,y,cv,method,opt
 % dprimes: [nClasses, nTrainingExamples, nRuns] array, the d' scores
 % models: [nClasses, nTrainingExamples, nRuns] cell, the classifiers
 % classVals: [nClasses, nTrainingExamples, nRuns] cell, classification values
+    if (nargin < 8), type = 'random'; end;
     [nClasses,nTrainingExamples,nRuns] = size(cv);
     aucs = zeros(nClasses,nTrainingExamples,nRuns);
     dprimes = zeros(nClasses,nTrainingExamples,nRuns);
@@ -30,14 +31,15 @@ function [aucs,dprimes,models,classVals] = evaluatePerformance(x,y,cv,method,opt
                 else
                     X = x;
                 end
-                [classificationValues,model] = classifyResponses(X(chooseFeatures(X(:,cv{iClass,iTrain,iRun}),y(iClass,cv{iClass,iTrain,iRun}),classOrigin,nFeatures),:),y(iClass,:),cv{iClass,iTrain,iRun},method,options);
+                features{iClass,iTrain,iRun} = chooseFeatures(X(:,cv{iClass,iTrain,iRun}),y(iClass,cv{iClass,iTrain,iRun}),classOrigin,nFeatures,type);
+                [classificationValues,model] = classifyResponses(X(features{iClass,iTrain,iRun},:),y(iClass,:),cv{iClass,iTrain,iRun},method,options);
                 if strcmp(lower(method),'svm')
                     classPredictions = (classificationValues > 0.5);
                 else
                     classPredictions = (sign(classificationValues)+1)./2;
                 end
                 models{iClass,iTrain,iRun} = model;
-		classVals{iClass,iTrain,iRun} = classificationValues;
+                classVals{iClass,iTrain,iRun} = classificationValues;
                 aucs(iClass,iTrain,iRun) = auc(classificationValues,y(iClass,~cv{iClass,iTrain,iRun}));
                 dprimes(iClass,iTrain,iRun) = dprime(classPredictions,y(iClass,~cv{iClass,iTrain,iRun}),1,0);
                 fprintf('%d %d %d: %.3f %.3f\n',iClass,iTrain,iRun,aucs(iClass,iTrain,iRun),dprimes(iClass,iTrain,iRun));
