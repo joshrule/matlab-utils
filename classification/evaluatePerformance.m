@@ -1,4 +1,4 @@
-function [aucs,dprimes,models,classVals,features] = evaluatePerformance(x,y,cv,method,options,nFeatures,classOrigin,type)
+function [aucs,dprimes,models,classVals,features] = evaluatePerformance(x,y,cv,method,options,nFeatures,classOrigin,type,scores)
 % [aucs,dprimes,models,classVals] = evaluatePerformance(x,y,cv,method,options,nFeatures,classOrigin)
 %
 % Give AUC and d' scores using cross-validation over a set of examples and labels
@@ -19,6 +19,7 @@ function [aucs,dprimes,models,classVals,features] = evaluatePerformance(x,y,cv,m
 % dprimes: [nClasses, nTrainingExamples, nRuns] array, the d' scores
 % models: [nClasses, nTrainingExamples, nRuns] cell, the classifiers
 % classVals: [nClasses, nTrainingExamples, nRuns] cell, classification values
+    if (nargin < 9), scores = x; end;
     if (nargin < 8), type = 'random'; end;
     [nClasses,nTrainingExamples,nRuns] = size(cv);
     aucs = zeros(nClasses,nTrainingExamples,nRuns);
@@ -31,7 +32,9 @@ function [aucs,dprimes,models,classVals,features] = evaluatePerformance(x,y,cv,m
                 else
                     X = x;
                 end
-                features{iClass,iTrain,iRun} = chooseFeatures(X(:,cv{iClass,iTrain,iRun}),y(iClass,cv{iClass,iTrain,iRun}),classOrigin,nFeatures,type);
+                featX = X(:,cv{iClass,iTrain,iRun});
+                scoresX = scores(:,cv{iClass,iTrain,iRun});
+                features{iClass,iTrain,iRun} = chooseFeatures(featX,y(iClass,cv{iClass,iTrain,iRun}),classOrigin,nFeatures,type,scoresX);
                 [classificationValues,model] = classifyResponses(X(features{iClass,iTrain,iRun},:),y(iClass,:),cv{iClass,iTrain,iRun},method,options);
                 if strcmp(lower(method),'svm')
                     classPredictions = (classificationValues > 0.5);
