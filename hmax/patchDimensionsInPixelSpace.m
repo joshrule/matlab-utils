@@ -1,7 +1,7 @@
-function [x1o,x2o,y1o,y2o] = patchDimensionsInPixelSpace( ...
-  band,x1i,x2i,y1i,y2i,c1Scale,c1Space,rfSizes,imgSizeX,imgSizeY)
+function [c1,c2,r1,r2] = patchDimensionsInPixelSpace( ...
+  band,p1c,p2c,p1r,p2r,c1Scale,c1Space,rfSizes,imgSizeC,imgSizeR)
 % [x1o,x2o,y1o,y2o] = patchDimensionsInPixelSpace( ...
-%   band,x1i,x2i,y1i,y2i,c1Scale,c1Space,rfSizes,imgSizeX,imgSizeY)
+%   band,p1c,p2c,p1r,p2r,c1Scale,c1Space,rfSizes,imgSizeC,imgSizeR)
 %
 % Given information about a patch, return the area in pixel space which
 % contributes to it.
@@ -12,19 +12,19 @@ function [x1o,x2o,y1o,y2o] = patchDimensionsInPixelSpace( ...
 % c1Space: double array, the c1Space of the C1 activation  (see C1.m in 'hmax')
 % rfSizes: double array, the receptive field sizes used by initGabor for the C1
 %   activation (see initGabor.m in 'hmax')
-% imgSizeX: scalar double, the number of columns in the image, optional
-% imgSizeY: scalar double, the number of rows in the image, optional
+% imgSizeC: scalar double, the number of columns in the image, optional
+% imgSizeR: scalar double, the number of rows in the image, optional
 %
-% x1o,x2o,y1o,y2o: scalar doubles, the four corners of the patch in pixel-space
-    if (nargin < 10) imgSizeY = bitmax; end;
-    if (nargin < 9)  imgSizeX = bitmax; end;
+% c1,c2,r1,r2: scalar doubles, the four corners of the patch in pixel-space
+    if (nargin < 10) imgSizeR = bitmax; end;
+    if (nargin < 9)  imgSizeC = bitmax; end;
 
-    [x1x1,x1x2,y1y1,y1y2] = c1ToPixel(x1i,y1i,band,c1Scale,c1Space,rfSizes, ...
-                                      imgSizeX,imgSizeY);
-    [x2x1,x2x2,y2y1,y2y2] = c1ToPixel(x2i,y2i,band,c1Scale,c1Space,rfSizes, ...
-                                      imgSizeX,imgSizeY);
-    x1o = min(x1x1,x2x1);
-    x2o = max(x1x2,x2x2);
-    y1o = min(y1y1,y2y1);
-    y2o = max(y1y2,y2y2);
+    [p1c1,p1c2,p1r1,p1r2] = c1ToPixel(p1c,p1r,band,c1Scale,c1Space,rfSizes, ...
+                                      imgSizeC,imgSizeR);
+    [p2c1,p2c2,p2r1,p2r2] = c1ToPixel(p2c,p2r,band,c1Scale,c1Space,rfSizes, ...
+                                      imgSizeC,imgSizeR);
+    c1 = min(p1c1,p2c1);
+    c2 = max(p1c2,p2c2);
+    r1 = min(p1r1,p2r1);
+    r2 = max(p1r2,p2r2);
 end
