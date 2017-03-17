@@ -1,52 +1,75 @@
-function [aucs,dprimes,models,classVals,features] = evaluatePerformance(x,y,cv,method,options,nFeatures,classOrigin,type,scores)
-% [aucs,dprimes,models,classVals] = evaluatePerformance(x,y,cv,method,options,nFeatures,classOrigin)
+function results = evaluatePerformance(x,y,x_Te,yTe,cv,options,nFeatures,type,scores)
+% results = evaluatePerformance(x,y,cv,options,nFeatures)
 %
-% Give AUC and d' scores using cross-validation over a set of examples and labels
+% avg. precision and ROC AUC using cross-validation over a set of examples and labels
 %
 % x: [nFeatures nExamples] array, the feature values
 % y: [nClasses nExamples] array, the class labels of examples in x
-% classifier: a string, the classifier to use, svm or gentleboost
-% cv: cell array of vectors, the train/test splits, where 1 = train, 0 = test
-% method: string, 'svm' or 'gb', use SVM or GentleBoost
+% cv: cell array of vectors, train/ignore splits, s.t. 1 = train, 0 = ignore
 % options: options for the classifier
 % nFeatures: scalar, the number of Features to use for classification, must be
 %   less than the total number of features in x
-% classOrigin: nExamples vector, denotes the class of origin for each example
-%   and is used solely for choosing features. If empty, features are chosen at
-%   random. Otherwise, the top features per class are chosen by FI (fisher.m)
+% type: string, how to select features
+% scores: [nFeatures nExamples] array, scores for feature selection
 %
-% aucs: [nClasses, nTrainingExamples, nRuns] array, the AUC scores
-% dprimes: [nClasses, nTrainingExamples, nRuns] array, the d' scores
-% models: [nClasses, nTrainingExamples, nRuns] cell, the classifiers
-% classVals: [nClasses, nTrainingExamples, nRuns] cell, classification values
+% results: [nClasses, nTrainingExamples, nRuns] struct, the classification data
+
     if (nargin < 9), scores = x; end;
     if (nargin < 8), type = 'random'; end;
     [nClasses,nTrainingExamples,nRuns] = size(cv);
-    aucs = zeros(nClasses,nTrainingExamples,nRuns);
-    dprimes = zeros(nClasses,nTrainingExamples,nRuns);
+    features = cell(nClasses,nTrainingExamples,nRuns);
+
     for iClass = 1:nClasses
         for iTrain = 1:nTrainingExamples
             parfor iRun = 1:nRuns
-                if(iscell(x))
-                    X = x{iClass,iRun};
-                else
-                    X = x;
-                end
-                featX = X(:,cv{iClass,iTrain,iRun});
-                scoresX = scores(:,cv{iClass,iTrain,iRun});
-                features{iClass,iTrain,iRun} = chooseFeatures(featX,y(iClass,cv{iClass,iTrain,iRun}),classOrigin,nFeatures,type,scoresX);
-                [classificationValues,model] = classifyResponses(X(features{iClass,iTrain,iRun},:),y(iClass,:),cv{iClass,iTrain,iRun},method,options);
-                if strcmp(lower(method),'svm')
-                    classPredictions = (classificationValues > 0.5);
-                else
-                    classPredictions = (sign(classificationValues)+1)./2;
-                end
-                models{iClass,iTrain,iRun} = model;
-                classVals{iClass,iTrain,iRun} = classificationValues;
-                aucs(iClass,iTrain,iRun) = auc(classificationValues,y(iClass,~cv{iClass,iTrain,iRun}));
-                dprimes(iClass,iTrain,iRun) = dprime(classPredictions,y(iClass,~cv{iClass,iTrain,iRun}),1,0);
-                fprintf('%d %d %d: %.3f %.3f\n',iClass,iTrain,iRun,aucs(iClass,iTrain,iRun),dprimes(iClass,iTrain,iRun));
+
+                % update the options
+                options2 = options;
+                options2.dir = [options2.dir '_' num2str(iClass) ...
+                                             '_' num2str(iTrain) ...
+                                             '_' num2str(iRun)];
+
+                % separate training from non-training examples
+                xTr = x(cv{iClass,iTrain,iRun},:);
+                yTr = y(cv{iClass,iTrain,iRun},iClass);
+
+                % transform & standardize the data 
+                xTr = log(1+xTr);
+                xTe = log(1+x_Te);
+                [xTr,means,stds] = standardize(xTr);
+                xTe = standardize(xTe,means,stds);
+
+                % choose features
+                scoresTr = scores(cv{iClass,iTrain,iRun},:);
+                features = chooseFeatures(xTr,yTr,[],nFeatures,type,scoresTr);
+                xTr = xTr(:,features);
+                xTe = xTe(:,features);
+
+                % balance the positive and negative examples
+                [choices,wTr,xTr,yTr] = balance_pos_neg_examples(xTr,yTr,options2.N);
+
+                % perform the classification
+                tmpresults = binary_log_regression(xTr,yTr,wTr,xTe,yTe,options2);
+                tmpresults.class = iClass;
+                tmpresults.nTraining = sum(yTr);
+                tmpresults.run = iRun;
+                tmpresults = rmfield(tmpresults,'features');
+                tmpresults = rmfield(tmpresults,'y_hat');
+
+                % report the results
+                saveit([options2.dir '/results.mat'],features,choices);
+                results(iClass,iTrain,iRun) = tmpresults;
+                fprintf('%d %d %d: %.3f %.3f\n',iClass,iTrain,iRun, ...
+                  results(iClass,iTrain,iRun).pr_auc, ...
+                  results(iClass,iTrain,iRun).roc_auc);
             end
         end
     end
+
+    results = struct2table(results(:));
+
+end
+
+function saveit(file,chosenFeatures,choices)
+    save(file,'chosenFeatures','choices','-append');
 end

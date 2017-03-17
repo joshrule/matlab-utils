@@ -40,6 +40,7 @@ function results = evaluatePerformanceAlt( ...
             start = 1+(iBatch-1)*nGPUs;
             stop = min(iBatch*nGPUs,nRuns);
             nGPUsNeeded = stop-start+1;
+            nCategories = length(unique(yTe));
 
             % write the data to disk
             for iGPU = 1:nGPUsNeeded
@@ -50,26 +51,16 @@ function results = evaluatePerformanceAlt( ...
                 chosen_items = cv{iTrain,start+iGPU-1};
 
                 if ~exist([final_dir{iGPU} 'data.mat'],'file') || ~exist([final_dir{iGPU} 'results.mat'],'file')
+
+                    [trainX,testX] = normalize_data(xTr(cv{iTrain,start+iGPU-1},:),xTe);
+
                     % write training data
-                    half = sum(cv{iTrain,start+iGPU-1});
-                    if half > (2147483647/size(xTr,2)) % hack!
-                        chosen_items = find(cv{iTrain,start+iGPU-1});
-                        first_half = chosen_items(1:half);
-                        second_half = chosen_items((half+1):end);
-                        train_order = writeHDF5(xTr(first_half,:), ...
-                                               yTr(first_half), ...
-                                               [final_dir{iGPU} 'train1.h5']);
-                        train_order = writeHDF5(xTr(second_half,:), ...
-                                               yTr(second_half), ...
-                                               [final_dir{iGPU} 'train2.h5']);
-                    else
-                        train_order = writeHDF5(xTr(cv{iTrain,start+iGPU-1},:), ...
-                                               yTr(cv{iTrain,start+iGPU-1}), ...
-                                               [final_dir{iGPU} 'train.h5']);
-                    end
+                    train_order = writeHDF5(trainX, ...
+                                           yTr(cv{iTrain,start+iGPU-1}), ...
+                                           [final_dir{iGPU} 'train.h5']);
 
                     % write testing data
-                    test_order = writeHDF5(xTe, ...
+                    test_order = writeHDF5(testX, ...
                                           yTe, ...
                                           [final_dir{iGPU} 'test.h5']);
 
@@ -83,7 +74,7 @@ function results = evaluatePerformanceAlt( ...
             spmd(nGPUsNeeded)
                 if ~exist([final_dir{labindex} 'results.mat'],'file')
                     system(['LD_LIBRARY_PATH=/usr/lib/:/usr/local/lib/:/usr/local/cuda/lib:/usr/local/cuda/lib64 ' ...
-                            'python mnlr.py ' num2str(int32(labindex-1)) ' ' final_dir{labindex} ' &> ' final_dir{labindex} 'log.log']);
+                            'python mnlr.py ' num2str(int32(labindex-1)) ' ' num2str(nCategories) ' ' final_dir{labindex} ' &> ' final_dir{labindex} 'log.log']);
                 end
             end
 
@@ -116,4 +107,9 @@ function order = writeHDF5(xs,ys,file)
         h5create(file,'/label',size(shuffledYs'));
         h5write(file,'/label',single(shuffledYs'));
     end
+end
+
+function [trainX,testX] = normalize_data(trX,teX)
+    trainX = trX;
+    testX = teX;
 end
