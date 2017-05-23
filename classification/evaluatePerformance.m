@@ -1,4 +1,4 @@
-function results = evaluatePerformance(x,y,x_Te,yTe,cv,options,nFeatures,type,scores)
+function results = evaluatePerformance(x,y,x_Te,yTe,cv,options,nFeatures,type,scores,nClasses)
 % results = evaluatePerformance(x,y,cv,options,nFeatures)
 %
 % avg. precision and ROC AUC using cross-validation over a set of examples and labels
@@ -14,13 +14,16 @@ function results = evaluatePerformance(x,y,x_Te,yTe,cv,options,nFeatures,type,sc
 %
 % results: [nClasses, nTrainingExamples, nRuns] struct, the classification data
 
+    if (nargin < 10), nClasses = size(cv,1); end;
     if (nargin < 9), scores = x; end;
     if (nargin < 8), type = 'random'; end;
-    [nClasses,nTrainingExamples,nRuns] = size(cv);
+    [~,nTrainingExamples,nRuns] = size(cv);
     features = cell(nClasses,nTrainingExamples,nRuns);
 
-    for iClass = 1:nClasses
-        for iTrain = 1:nTrainingExamples
+    for iTrain = 1:nTrainingExamples
+        classOrder = randperm(size(cv,1));
+        for iClass = 1:nClasses
+            theClass = classOrder(iClass);
             parfor iRun = 1:nRuns
 
                 % update the options
@@ -31,7 +34,7 @@ function results = evaluatePerformance(x,y,x_Te,yTe,cv,options,nFeatures,type,sc
 
                 % separate training from non-training examples
                 xTr = x(cv{iClass,iTrain,iRun},:);
-                yTr = y(cv{iClass,iTrain,iRun},iClass);
+                yTr = y(cv{iClass,iTrain,iRun},theClass);
 
                 % transform & standardize the data 
                 xTr = log(1+xTr);
@@ -41,7 +44,7 @@ function results = evaluatePerformance(x,y,x_Te,yTe,cv,options,nFeatures,type,sc
 
                 % choose features
                 scoresTr = scores(cv{iClass,iTrain,iRun},:);
-                features = chooseFeatures(xTr,yTr,[],nFeatures,type,scoresTr);
+                features = chooseFeatures(yTr,[],nFeatures,type,scoresTr);
                 xTr = xTr(:,features);
                 xTe = xTe(:,features);
 
@@ -50,7 +53,8 @@ function results = evaluatePerformance(x,y,x_Te,yTe,cv,options,nFeatures,type,sc
 
                 % perform the classification
                 tmpresults = binary_log_regression(xTr,yTr,wTr,xTe,yTe,options2);
-                tmpresults.class = iClass;
+                tmpresults.class = theClass;
+                tmpresults.index = iClass;
                 tmpresults.nTraining = sum(yTr);
                 tmpresults.run = iRun;
                 tmpresults = rmfield(tmpresults,'features');
