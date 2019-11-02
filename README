@@ -24,6 +24,3 @@ ImageNet, and analyzing data.
   - README: this file
 
   - scaling/: tools to scale a series of data
-
-  - similarity.pl: a script to calculate the semantic distance between two
-    WordNet concepts.
